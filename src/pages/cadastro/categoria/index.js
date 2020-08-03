@@ -3,29 +3,21 @@ import { Link } from 'react-router-dom';
 import PageDefault from '../../../components/PageDefault';
 import FormField from '../../../components/FormField';
 import Button from '../../../components/Button';
+import TableCategories from '../../../components/Table';
+import useForm from '../../../hooks/useForm';
 
 function CadastroCategoria() {
   const initialValues = {
-    name: '',
-    description: '',
-    color: '#000000',
+    titulo: '',
+    link_extra: {
+      text: '',
+    },
+    cor: '#000000',
   };
-  const [categories, setCategory] = useState([]);
-  const [values, setValues] = useState(initialValues);
 
-  function setValue(key, value) {
-    setValues({
-      ...values,
-      [key]: value,
-    });
-  }
-  function handleChange(event) {
-    // const { getAttribute, value } = event.target;
-    setValue(
-      event.target.getAttribute('name'),
-      event.target.value,
-    );
-  }
+  const { handleChange, values, clearForm } = useForm(initialValues);
+
+  const [categories, setCategory] = useState([]);
   useEffect(() => {
     const URL = window.location.hostname.includes('localhost')
       ? 'http://localhost:8080/categorias'
@@ -46,32 +38,35 @@ function CadastroCategoria() {
       <form onSubmit={(event) => {
         event.preventDefault();
         setCategory([...categories, values]);
-        setValues(initialValues);
+        clearForm();
       }}
       >
         <FormField
           label="Nome da Categoria: "
           type="text"
-          name="name"
-          value={values.name}
+          name="titulo"
+          value={values.titulo}
           onChange={handleChange}
         />
         <FormField
           label="Descrição: "
           type="textarea"
-          name="description"
-          value={values.description}
-          onChange={handleChange}
+          name="link_extra"
+          value={values.link_extra.text}
+          onChange={(event) => handleChange({ target: { getAttribute() { return 'link_extra'; }, value: { text: event.target.value } } })}
         />
         <FormField
           label="Cor: "
           type="color"
-          name="color"
-          value={values.color}
+          name="cor"
+          value={values.cor}
           onChange={handleChange}
         />
         <Button>
           Cadastrar
+        </Button>
+        <Button onClick={clearForm}>
+          Limpar
         </Button>
       </form>
 
@@ -81,20 +76,7 @@ function CadastroCategoria() {
         </div>
       )}
 
-      <ul>
-        {categories.map((category, index) => (
-          <li key={`${category}${index}`}>
-            Nome:
-            {' '}
-            {category.name}
-            , Descrição:
-            {category.description}
-            , cor:
-            {category.color}
-          </li>
-        ))}
-      </ul>
-
+      <TableCategories categories={categories} />
       <Link to="/cadastro/video">
         Voltar
       </Link>
